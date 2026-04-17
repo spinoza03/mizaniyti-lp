@@ -642,6 +642,11 @@ function Footer() {
 
 /* ─── App ─── */
 export default function App() {
+  useEffect(() => {
+    const w = window as any;
+    if (w.fbq) w.fbq('track', 'ViewContent');
+  }, []);
+
   return (
     <>
       <style>{STYLE}</style>
