@@ -503,13 +503,17 @@ function Testimonials() {
 
 /* ─── Pricing ─── */
 function Pricing() {
-  const [billing, setBilling] = useState<'monthly' | 'yearly'>('yearly');
+  const [spotsLeft, setSpotsLeft] = useState(4);
 
-  const plans = {
-    monthly: { price: '20', period: 'شهر', sub: 'بلا التزام — يمكنك الإلغاء متى شئت', badge: null },
-    yearly: { price: '99', period: 'سنة', sub: 'يعني 8.25 DH فالشهر — وفر 141 DH', badge: 'الأفضل قيمة' },
-  };
-  const p = plans[billing];
+  useEffect(() => {
+    const t1 = setTimeout(() => setSpotsLeft(s => Math.max(s - 1, 1)), 10000);
+    const t2 = setTimeout(() => setSpotsLeft(s => Math.max(s - 1, 1)), 26000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  const totalSpots = 15;
+  const taken = totalSpots - spotsLeft;
+  const pct = (taken / totalSpots) * 100;
 
   const features = [
     'تتبع لا محدود للمعاملات',
@@ -518,36 +522,40 @@ function Pricing() {
     'أهداف الادخار',
     'التقارير الشهرية',
     'دعم بالدارجة على WhatsApp',
+    'جميع المميزات القادمة مجانًا',
   ];
 
   return (
     <section id="pricing" className="section-pad" style={{ background: '#fff' }}>
       <div style={{ maxWidth: '420px', margin: '0 auto', textAlign: 'center' }}>
         <div style={{ marginBottom: '10px' }}><Chip color="coral">💰 الثمن</Chip></div>
-        <h2 className="h2" style={{ color: '#111827', marginBottom: '8px' }}>بسيط وبدون مفاجآت</h2>
-        <p style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '28px', fontFamily: "'Cairo', sans-serif" }}>اختر اللي يناسبك</p>
+        <h2 className="h2" style={{ color: '#111827', marginBottom: '8px' }}>عرض سنوي — بدون مفاجآت</h2>
+        <p style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '20px', fontFamily: "'Cairo', sans-serif" }}>
+          99 DH فالسنة — يعني 8.25 DH فالشهر فقط
+        </p>
 
-        {/* Toggle */}
+        {/* Scarcity banner */}
         <div style={{
-          display: 'inline-flex', background: '#f3f4f6',
-          borderRadius: '10px', padding: '4px', gap: '4px', marginBottom: '32px',
+          background: '#fff7ed', border: '1.5px solid #fed7aa',
+          borderRadius: '14px', padding: '14px 18px', marginBottom: '24px',
         }}>
-          {(['monthly', 'yearly'] as const).map(b => (
-            <button key={b} onClick={() => setBilling(b)} style={{
-              padding: '9px 18px', borderRadius: '7px', cursor: 'pointer',
-              fontSize: '14px', fontWeight: 600, fontFamily: "'Cairo', sans-serif",
-              border: 'none', transition: 'all 0.18s',
-              background: billing === b ? '#fff' : 'transparent',
-              color: billing === b ? '#111827' : '#9ca3af',
-              boxShadow: billing === b ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
-              minWidth: '80px',
-              WebkitTapHighlightColor: 'transparent',
-            }}>
-              {b === 'monthly' ? 'شهري' : (
-                <>سنوي <span style={{ marginRight: '4px', fontSize: '10px', background: '#0d9488', color: 'white', borderRadius: '20px', padding: '1px 5px' }}>-59%</span></>
-              )}
-            </button>
-          ))}
+          <div style={{ fontSize: '14px', fontWeight: 700, color: '#c2410c', fontFamily: "'Cairo', sans-serif", marginBottom: '8px' }}>
+            🔥 عرض التأسيس — فقط لأول 15 عميل
+          </div>
+          <div style={{ height: '9px', background: '#fed7aa', borderRadius: '5px', overflow: 'hidden', marginBottom: '8px' }}>
+            <div style={{
+              height: '100%',
+              width: `${pct}%`,
+              background: 'linear-gradient(90deg, #f97316, #ef4444)',
+              borderRadius: '5px',
+              transition: 'width 1s ease',
+            }} />
+          </div>
+          <div style={{ fontSize: '13px', color: '#9a3412', fontFamily: "'Cairo', sans-serif" }}>
+            تبقاو غير{' '}
+            <strong style={{ color: '#ef4444', fontSize: '17px' }}>{spotsLeft}</strong>
+            {' '}أماكن من أصل 15 — دار دابا قبل ما يكملوا
+          </div>
         </div>
 
         {/* Card */}
@@ -557,22 +565,28 @@ function Pricing() {
           boxShadow: '0 8px 40px rgba(13,148,136,0.1)',
           position: 'relative',
         }}>
-          {p.badge && (
-            <div style={{
-              position: 'absolute', top: '-13px', left: '50%', transform: 'translateX(-50%)',
-              background: '#f97316', color: 'white', borderRadius: '20px',
-              padding: '3px 16px', fontSize: '12px', fontWeight: 700,
-              fontFamily: "'Cairo', sans-serif", whiteSpace: 'nowrap',
-            }}>{p.badge} ✨</div>
-          )}
+          <div style={{
+            position: 'absolute', top: '-13px', left: '50%', transform: 'translateX(-50%)',
+            background: '#f97316', color: 'white', borderRadius: '20px',
+            padding: '3px 16px', fontSize: '12px', fontWeight: 700,
+            fontFamily: "'Cairo', sans-serif", whiteSpace: 'nowrap',
+          }}>عرض خاص للمؤسسين ✨</div>
+
+          {/* Crossed-out original price */}
+          <div style={{ marginBottom: '2px' }}>
+            <span style={{ fontSize: '15px', color: '#9ca3af', textDecoration: 'line-through', fontFamily: "'Cairo', sans-serif" }}>199 DH</span>
+            <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: 700, fontFamily: "'Cairo', sans-serif", marginRight: '8px' }}>وفر 50%</span>
+          </div>
 
           <div style={{ marginBottom: '4px' }}>
-            <span style={{ fontSize: '60px', fontWeight: 900, color: '#0d9488', fontFamily: "'Cairo', sans-serif", lineHeight: 1 }}>{p.price}</span>
-            <span style={{ fontSize: '16px', color: '#9ca3af', fontFamily: "'Cairo', sans-serif" }}> DH / {p.period}</span>
+            <span style={{ fontSize: '64px', fontWeight: 900, color: '#0d9488', fontFamily: "'Cairo', sans-serif", lineHeight: 1 }}>99</span>
+            <span style={{ fontSize: '18px', color: '#374151', fontFamily: "'Cairo', sans-serif", fontWeight: 700 }}> DH / سنة</span>
           </div>
-          <p style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '24px', fontFamily: "'Cairo', sans-serif" }}>{p.sub}</p>
+          <p style={{ fontSize: '13px', color: '#0f766e', fontWeight: 700, marginBottom: '24px', fontFamily: "'Cairo', sans-serif" }}>
+            يعني 8.25 DH فالشهر — بلا التزام طويل
+          </p>
 
-          <ul style={{ listStyle: 'none', textAlign: 'right', marginBottom: '24px' }}>
+          <ul style={{ listStyle: 'none', textAlign: 'right', marginBottom: '20px' }}>
             {features.map((f, i) => (
               <li key={i} style={{
                 padding: '10px 0',
@@ -587,7 +601,48 @@ function Pricing() {
             ))}
           </ul>
 
-          <a href={APP_URL} className="pricing-btn">🚀 ابدأ تجربتك الآن</a>
+          {/* Money-back guarantee */}
+          <div style={{
+            background: '#f0fdf4', border: '1.5px solid #bbf7d0',
+            borderRadius: '12px', padding: '12px 14px', marginBottom: '16px',
+            display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center',
+          }}>
+            <span style={{ fontSize: '22px' }}>🛡️</span>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: '#15803d', fontFamily: "'Cairo', sans-serif" }}>
+                ضمان استرداد كامل خلال 7 أيام
+              </div>
+              <div style={{ fontSize: '12px', color: '#6b7280', fontFamily: "'Cairo', sans-serif" }}>
+                مش عاجبك؟ نرجعو ليك فلوسك بدون شروط
+              </div>
+            </div>
+          </div>
+
+          <a href={APP_URL} className="pricing-btn" style={{ marginBottom: '12px' }}>
+            🚀 احجز مكانك دابا
+          </a>
+
+          {/* WhatsApp CTA */}
+          <a
+            href="https://wa.me/212608301414"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              marginTop: '12px', padding: '14px 16px', borderRadius: '12px',
+              background: '#25D366', color: 'white',
+              textDecoration: 'none', fontWeight: 700, fontSize: '15px',
+              fontFamily: "'Cairo', sans-serif",
+              boxShadow: '0 2px 14px rgba(37,211,102,0.3)',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            <span style={{ fontSize: '19px' }}>💬</span>
+            <span>سجل أو استفسر على واتساب</span>
+          </a>
+          <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '8px', fontFamily: "'Cairo', sans-serif" }}>
+            +212 608-301-414
+          </p>
         </div>
       </div>
     </section>
@@ -631,7 +686,7 @@ function Footer() {
         التطبيق المغربي الأول لتدبير الميزانية الشخصية بالدارجة
       </p>
       <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap', marginBottom: '16px' }}>
-        {[{ label: 'ابدأ دابا', href: APP_URL }, { label: 'الأسعار', href: '#pricing' }, { label: 'تواصل معنا', href: '#' }].map((l, i) => (
+        {[{ label: 'ابدأ دابا', href: APP_URL }, { label: 'الأسعار', href: '#pricing' }, { label: 'واتساب', href: 'https://wa.me/212608301414' }].map((l, i) => (
           <a key={i} href={l.href} style={{ fontSize: '13px', color: '#0d9488', textDecoration: 'none', fontFamily: "'Cairo', sans-serif" }}>{l.label}</a>
         ))}
       </div>
